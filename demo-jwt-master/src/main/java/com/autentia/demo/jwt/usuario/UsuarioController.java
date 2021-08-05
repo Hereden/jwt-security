@@ -2,12 +2,15 @@ package com.autentia.demo.jwt.usuario;
 
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @RestController
 public class UsuarioController {
@@ -35,5 +38,10 @@ public class UsuarioController {
 	@GetMapping("/users/{username}")
 	public Usuario getUsuario(@PathVariable String username) {
 		return usuarioRepository.findByUsername(username);
+	}
+	
+	@GetMapping("/user/auth")
+	public Usuario getAuthUser(){
+		return usuarioRepository.findByUsername((String) (SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
 	}
 }

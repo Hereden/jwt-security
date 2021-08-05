@@ -12,9 +12,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import static com.autentia.demo.jwt.security.Constants.HEADER_AUTHORIZACION_KEY;
 
 @Configuration
 @EnableWebSecurity
@@ -31,6 +32,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		/*
@@ -56,11 +58,17 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		// Se define la clase que recupera los usuarios y el algoritmo para procesar las passwords
 		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
 	}
-
+	
 	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-		return source;
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedOrigins("*").exposedHeaders(HEADER_AUTHORIZACION_KEY);
+			}
+		};
 	}
+
+	
+	
 }
